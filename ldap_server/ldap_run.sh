@@ -36,6 +36,7 @@ if [ ! -f /etc/openldap/CONFIGURED ]; then
   envsubst < /ldap_config/nslcd.conf.template > /etc/nslcd.conf
   envsubst < /ldap_config/multi-master/server1.ldif.template > /ldap_config/multi-master/server1.ldif
   envsubst < /ldap_config/multi-master/server2.ldif.template > /ldap_config/multi-master/server2.ldif
+  envsubst < /ldap_config/testuser.ldif.template > /ldap_config/testuser.ldif
 
   # Start slapd in the background
   slapd -h "ldap:/// ldaps:/// ldapi:///" -d 256 > /dev/null 2>&1 &
