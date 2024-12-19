@@ -114,7 +114,8 @@ if [ ! -f /etc/openldap/CONFIGURED ]; then
   rm -rf /ldap_config/*.template
   touch /etc/openldap/CONFIGURED
   ssh-keygen -A > /dev/null 2>&1
-  #start the nslcd service
+  #start the sshd service
+  /usr/sbin/sshd &
 fi
 
 # Start slapd in the foreground
@@ -134,6 +135,11 @@ echo "slapd is ready."
 if ! pgrep -x "nslcd" > /dev/null; then
     echo "Starting nslcd..."
     /usr/sbin/nslcd
+fi
+# Start nslcd
+if ! pgrep -x "sshd" > /dev/null; then
+    echo "Starting sshd..."
+    /usr/sbin/sshd
 fi
 
 # Keep the container running
