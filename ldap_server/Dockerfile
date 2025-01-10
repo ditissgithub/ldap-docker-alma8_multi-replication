@@ -29,7 +29,6 @@ COPY ./ldap_int-auth/nsswitch.conf /etc/nsswitch.conf
 COPY ./ldap_int-auth/password-auth /etc/pam.d/
 COPY ./ldap_int-auth/system-auth /etc/pam.d/
 COPY ./etc_openldap_config/ldap.conf.template /ldap_config/
-COPY ./etc_openldap_config/migrate_common.ph.template /ldap_config/
 
 RUN sed -i -e 's|#PermitRootLogin yes|PermitRootLogin yes|g' \
            -e 's|#Port 22|Port 2201|g' \
