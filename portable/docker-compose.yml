@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  ldap_container:
+    image: cdac_openldap_multi-replication:2.4.46
+    container_name: ldap_server1
+    network_mode: host
+    env_file:
+      - .env
+    environment:
+      - SERVER_ROLE=server1
+    volumes:
+      - ./ldapdata/:/ldapdata
+    stdin_open: true  # Equivalent to -i
+    tty: true         # Equivalent to -t
+    restart: unless-stopped
+    entrypoint: /bin/bash
