@@ -68,10 +68,10 @@ if ($NETINFOBRIDGE) {
 }
 
 # Default DNS domain
-$DEFAULT_MAIL_DOMAIN = "nsm.in";
+$DEFAULT_MAIL_DOMAIN = "${base_secondary_dc}.${base_primary_dc}";
 
 # Default base
-$DEFAULT_BASE = "dc=aryabhatta,dc=nsm,dc=in";
+$DEFAULT_BASE = "dc=${base_subdomain_dc},dc=${base_secondary_dc},dc=${base_primary_dc}";
 
 # Turn this on for inetLocalMailReceipient
 # sendmail support; add the following to
