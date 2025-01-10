@@ -37,6 +37,7 @@ if [ ! -f /etc/openldap/CONFIGURED ]; then
   envsubst < /ldap_config/multi-master/server1.ldif.template > /ldap_config/multi-master/server1.ldif
   envsubst < /ldap_config/multi-master/server2.ldif.template > /ldap_config/multi-master/server2.ldif
   envsubst < /ldap_config/testuser.ldif.template > /ldap_config/testuser.ldif
+  envsubst < /ldap_config/migrate_common.ph.template > /usr/share/migrationtools/migrate_common.ph
 
   # Start slapd in the background
   slapd -h "ldap:/// ldaps:/// ldapi:///" -d 256 > /dev/null 2>&1 &
@@ -67,6 +68,7 @@ if [ ! -f /etc/openldap/CONFIGURED ]; then
   ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/cosine.ldif -d $OPENLDAP_DEBUG_LEVEL > /dev/null 2>&1
   ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/inetorgperson.ldif -d $OPENLDAP_DEBUG_LEVEL > /dev/null 2>&1
   ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/nis.ldif -d $OPENLDAP_DEBUG_LEVEL > /dev/null 2>&1
+  ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/etc/openldap/schema/nsmattribute.ldif -d $OPENLDAP_DEBUG_LEVEL > /dev/null 2>&1
   # Configure the domain
   sed -i "s|OPENLDAP_ROOT_PASSWORD|${OPENLDAP_ROOT_PASSWORD_HASH}|g" /ldap_config/chdomain.ldif
   ldapmodify -Y EXTERNAL -H ldapi:/// -f /ldap_config/chdomain.ldif|| { echo "Error: Failed to configure domain."; exit 1; }
