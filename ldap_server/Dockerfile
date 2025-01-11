@@ -2,7 +2,7 @@
 FROM almalinux/8-base:latest
 
 # Maintainer information
-LABEL maintainer="satishg@cdac.in"
+LABEL maintainer="ditissgithub"
 
 RUN rm -rf /etc/openldap && mkdir -p /ldapdata/etc/openldap && ln -sf -t /etc /ldapdata/etc/openldap && \
     mkdir -p /ldapdata/var/lib/ldap && ln -sf -t /var/lib /ldapdata/var/lib/ldap
