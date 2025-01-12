@@ -20,10 +20,12 @@ COPY ./migrationtools-47-35.el8.noarch.rpm /
 # Configure OpenLDAP default files
 RUN cp /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG && \
     chown -R ldap:ldap /var/lib/ldap /etc/openldap && \
-    rpm -ivh /migrationtools-47-35.el8.noarch.rpm
+    rpm -ivh /migrationtools-47-35.el8.noarch.rpm && \
+    
 
 # Copy LDAP configuration files
 COPY ./ldap_config /ldap_config
+COPY ./ldap_config/migrate_passwd.pl /usr/share/migrationtools/migrate_passwd.pl
 
 COPY ./ldap_int-auth/nsswitch.conf /etc/nsswitch.conf
 COPY ./ldap_int-auth/password-auth /etc/pam.d/
