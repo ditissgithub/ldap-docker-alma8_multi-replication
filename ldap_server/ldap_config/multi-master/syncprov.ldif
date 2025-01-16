@@ -1,0 +1,11 @@
+dn: cn=module,cn=config
+objectClass: olcModuleList
+cn: module
+olcModulePath: /usr/lib64/openldap
+olcModuleLoad: syncprov.la
+[root@arya02 multi-master]# cat syncprov.ldif
+dn: olcOverlay=syncprov,olcDatabase={2}mdb,cn=config
+objectClass: olcOverlayConfig
+objectClass: olcSyncProvConfig
+olcOverlay: syncprov
+olcSpSessionLog: 100
