@@ -30,6 +30,8 @@ COPY ./ldap_int-auth/nsswitch.conf /etc/nsswitch.conf
 COPY ./ldap_int-auth/password-auth /etc/pam.d/
 COPY ./ldap_int-auth/system-auth /etc/pam.d/
 COPY ./etc_openldap_config/ldap.conf.template /ldap_config/
+COPY ./etc_openldap_config/server1_ldap.conf.template /ldap_config/
+COPY ./etc_openldap_config/server2_ldap.conf.template /ldap_config/
 COPY ./etc_openldap_config/schema/nsmattribute.ldif /etc/openldap/schema/
 
 RUN sed -i -e 's|#PermitRootLogin yes|PermitRootLogin yes|g' \
