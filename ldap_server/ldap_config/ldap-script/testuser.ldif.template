@@ -1,0 +1,18 @@
+dn: uid=pravin,ou=People,dc=aryabhatta,dc=nsm,dc=in
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: pravin
+sn: pravin
+userPassword: {SSHA}Cdgsiy6E/VJlaDUgUlO57h7SqFO1zV5W
+loginShell: /bin/bash
+uidNumber: 3006
+gidNumber: 3006
+homeDirectory: /home/tom
+
+dn: cn=pravin,ou=Group,dc=aryabhatta,dc=nsm,dc=in
+objectClass: posixGroup
+cn: pravin
+gidNumber: 3006
+memberUid: pravin
+###tom user password:tom@@123###
