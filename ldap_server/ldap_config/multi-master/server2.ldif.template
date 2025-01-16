@@ -7,11 +7,11 @@ dn: olcDatabase={2}mdb,cn=config
 changetype: modify
 add: olcSyncRepl
 olcSyncRepl: rid=002
-  provider=ldap://boson02.bose.res.in:389/
+  provider=ldap://$secondary_ldap_server_ip:389/
   bindmethod=simple
-  binddn="cn=Manager,dc=nsm,dc=in"
-  credentials=Boson@@123
-  searchbase="dc=nsm,dc=in"
+  binddn="cn=$cn,dc=$base_secondary_dc,dc=$base_primary_dc"
+  credentials=$LDAP_ROOT_PASSWD
+  searchbase="dc=$base_secondary_dc,dc=$base_primary_dc"
   scope=sub
   schemachecking=on
   type=refreshAndPersist
