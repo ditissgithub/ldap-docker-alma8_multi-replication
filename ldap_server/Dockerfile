@@ -13,7 +13,7 @@ RUN dnf install -y wget vim procps-ng cyrus-sasl-devel libtool-ltdl-devel \
     perl perl-devel epel-release && \
     dnf config-manager --set-enabled powertools && \
     dnf --enablerepo=epel install -y openldap-servers openldap-clients openldap openldap-devel && \
-    dnf install -y nss-pam-ldapd iproute oddjob openssh-server supervisor && \
+    dnf install -y nss-pam-ldapd iproute oddjob openssh-server supervisor rsync && \
     dnf clean all
 
 COPY ./migrationtools-47-35.el8.noarch.rpm /
