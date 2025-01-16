@@ -1,26 +1,24 @@
 #!/bin/bash
 set -xe
 
-if [[ -d "/ldapdata.NEEDINIT"  ]]; then
-    cp -ra /ldapdata.NEEDINIT/* /ldapdata/
+if [ ! -f /etc/openldap/CONFIGURED ] && [[ -d "/ldapdata.NEEDINIT"  ]]; then
+    rsync -a --ignore-existing /ldapdata.NEEDINIT/* /ldapdata/
     mv /ldapdata.NEEDINIT /ldapdata.orig
-fi
-# Reduce maximum number of open file descriptors to 1024
-ulimit -n 1024
+    # Reduce maximum number of open file descriptors to 1024
+    ulimit -n 1024
 
-# Check if required environment variables are set
-required_vars=(LDAP_ROOT_PASSWD base_primary_dc base_secondary_dc base_subdomain_dc cn ou1 ou2 ou3 ou4 ou5 ou6 ou7 primary_ldap_server_ip secondary_ldap_server_ip)
+    # Check if required environment variables are set
+    required_vars=(LDAP_ROOT_PASSWD base_primary_dc base_secondary_dc base_subdomain_dc cn ou1 ou2 ou3 ou4 ou5 ou6 ou7 primary_ldap_server_ip secondary_ldap_server_ip uidNumber gidNumber)
 
-for var in "${required_vars[@]}"; do
-  if [ -z "${!var}" ]; then
-    echo "Error: Environment variable $var is not set." >&2
-    exit 1
-  fi
-done
+    # Set default OpenLDAP debug level if not provided
+    OPENLDAP_DEBUG_LEVEL=${OPENLDAP_DEBUG_LEVEL:-256}
 
-
-# Set default OpenLDAP debug level if not provided
-OPENLDAP_DEBUG_LEVEL=${OPENLDAP_DEBUG_LEVEL:-256}
+    for var in "${required_vars[@]}"; do
+      if [ -z "${!var}" ]; then
+        echo "Error: Environment variable $var is not set." >&2
+      exit 1
+    fi
+    done
 
 # Run initial setup if not already configured
 if [ ! -f /etc/openldap/CONFIGURED ]; then
@@ -36,8 +34,6 @@ if [ ! -f /etc/openldap/CONFIGURED ]; then
   envsubst < /ldap_config/nslcd.conf.template > /etc/nslcd.conf
   envsubst < /ldap_config/multi-master/server1.ldif.template > /ldap_config/multi-master/server1.ldif
   envsubst < /ldap_config/multi-master/server2.ldif.template > /ldap_config/multi-master/server2.ldif
-  envsubst < /ldap_config/testuser.ldif.template > /ldap_config/testuser.ldif
-  envsubst < /ldap_config/migrate_common.ph.template > /usr/share/migrationtools/migrate_common.ph
 
   # Start slapd in the background
   slapd -h "ldap:/// ldaps:/// ldapi:///" -d 256 > /dev/null 2>&1 &
@@ -68,7 +64,6 @@ if [ ! -f /etc/openldap/CONFIGURED ]; then
   ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/cosine.ldif -d $OPENLDAP_DEBUG_LEVEL > /dev/null 2>&1
   ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/inetorgperson.ldif -d $OPENLDAP_DEBUG_LEVEL > /dev/null 2>&1
   ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/nis.ldif -d $OPENLDAP_DEBUG_LEVEL > /dev/null 2>&1
-  ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/nsmattribute.ldif -d $OPENLDAP_DEBUG_LEVEL > /dev/null 2>&1
   # Configure the domain
   sed -i "s|OPENLDAP_ROOT_PASSWORD|${OPENLDAP_ROOT_PASSWORD_HASH}|g" /ldap_config/chdomain.ldif
   ldapmodify -Y EXTERNAL -H ldapi:/// -f /ldap_config/chdomain.ldif|| { echo "Error: Failed to configure domain."; exit 1; }
@@ -118,32 +113,13 @@ if [ ! -f /etc/openldap/CONFIGURED ]; then
   touch /etc/openldap/CONFIGURED
   ssh-keygen -A > /dev/null 2>&1
   #start the sshd service
-  /usr/sbin/sshd &
+  #/usr/sbin/sshd &
 fi
 
-# Start slapd in the foreground
-if ! pgrep -x "slapd" > /dev/null; then
-    echo "Starting slapd..."
-    slapd -h "ldap:/// ldaps:/// ldapi:///" -d "$OPENLDAP_DEBUG_LEVEL" &
-fi
+echo "Starting supervisord..."
+exec /usr/bin/supervisord -c /etc/supervisord.conf
+    
 
-# Wait for slapd to be ready
-echo "Waiting for slapd to start..."
-while ! ldapsearch -x -b "" -s base -LLL >/dev/null 2>&1; do
-    sleep 1
-done
-echo "slapd is ready."
-
-# Start nslcd
-if ! pgrep -x "nslcd" > /dev/null; then
-    echo "Starting nslcd..."
-    /usr/sbin/nslcd
-fi
-# Start nslcd
-if ! pgrep -x "sshd" > /dev/null; then
-    echo "Starting sshd..."
-    /usr/sbin/sshd
-fi
 
 # Keep the container running
 timeout 10s wait
