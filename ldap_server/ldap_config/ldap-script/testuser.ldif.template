@@ -1,18 +1,39 @@
-dn: uid=pravin,ou=People,dc=aryabhatta,dc=nsm,dc=in
+dn: uid=tom,ou=cdac,dc=${base_subdomain_dc},dc=${base_secondary_dc},dc=${base_primary_dc}
+uid: tom
+cn: tom
+objectClass: person
+objectClass: organizationalPerson
 objectClass: inetOrgPerson
 objectClass: posixAccount
+objectClass: top
 objectClass: shadowAccount
-cn: pravin
-sn: pravin
 userPassword: {SSHA}Cdgsiy6E/VJlaDUgUlO57h7SqFO1zV5W
+shadowLastChange: 20101
+shadowMax: 99999
+shadowWarning: 7
 loginShell: /bin/bash
-uidNumber: 3006
-gidNumber: 3006
+uidNumber: $uidNumber
+gidNumber: $gidNumber
 homeDirectory: /home/tom
-
-dn: cn=pravin,ou=Group,dc=aryabhatta,dc=nsm,dc=in
-objectClass: posixGroup
-cn: pravin
-gidNumber: 3006
-memberUid: pravin
-###tom user password:tom@@123###
+ObjectClass: ExtensibleObject
+displayName: LDAP Test
+mobile: NA
+gender: NA
+institute: NA
+department: NA
+designation: NA
+application: NA
+projectname: NA
+mail: NA
+sn: ddn
+PI-HOD: NA
+domain: NA
+subdomain: NA
+amount: NA
+funded: NA
+cpuhours: NA
+gpuhours: NA
+startdate: 01-01-2025
+enddate: 01-01-2026
+address: Baner Pune
+description: tom user password:tom@@123
