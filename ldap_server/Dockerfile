@@ -13,7 +13,7 @@ RUN dnf install -y wget vim procps-ng cyrus-sasl-devel libtool-ltdl-devel \
     perl perl-devel epel-release && \
     dnf config-manager --set-enabled powertools && \
     dnf --enablerepo=epel install -y openldap-servers openldap-clients openldap openldap-devel && \
-    dnf install -y nss-pam-ldapd iproute oddjob openssh-server && \
+    dnf install -y nss-pam-ldapd iproute oddjob openssh-server supervisor && \
     dnf clean all
 
 COPY ./migrationtools-47-35.el8.noarch.rpm /
@@ -41,6 +41,7 @@ RUN sed -i -e 's|#PermitRootLogin yes|PermitRootLogin yes|g' \
 
 # Copy startup script
 COPY ./ldap_run.sh /usr/local/bin/
+COPY ./supervisord.conf /etc/supervisord.conf
 RUN chmod +x /usr/local/bin/ldap_run.sh
 
 # Expose LDAP and LDAPS ports
