@@ -22,7 +22,7 @@ variable_set() {
     envsubst < /ldap_config/multi-master/server2.ldif.template > /ldap_config/multi-master/server2.ldif
     envsubst < /ldap_config/nslcd.conf.template > /etc/nslcd.conf
     envsubst < /ldap_config/migrate_common.ph.template > /usr/share/migrationtools/migrate_common.ph
-    envsubst < ldap_config/ldap-script/testuser.ldif.template > ldap_config/ldap-script/testuser.ldif
+    envsubst < /ldap_config/ldap-script/testuser.ldif.template > /ldap_config/ldap-script/testuser.ldif
 }
 
 ldap_conf() {
