@@ -10,7 +10,7 @@ RUN rm -rf /etc/openldap && mkdir -p /ldapdata/etc/openldap && ln -sf -t /etc /l
 # Install dependencies
 RUN dnf install -y wget vim procps-ng cyrus-sasl-devel libtool-ltdl-devel \
     openssl-devel libdb-devel make chrony gettext libtool autoconf tar gcc \
-    perl perl-devel epel-release && \
+    perl perl-devel epel-release initscripts && \
     dnf config-manager --set-enabled powertools && \
     dnf --enablerepo=epel install -y openldap-servers openldap-clients openldap openldap-devel && \
     dnf install -y nss-pam-ldapd iproute oddjob openssh-server supervisor rsync && \
