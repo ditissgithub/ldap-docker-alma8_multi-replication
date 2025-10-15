@@ -34,16 +34,18 @@ COPY ./etc_openldap_config/server1_ldap.conf.template /ldap_config/
 COPY ./etc_openldap_config/server2_ldap.conf.template /ldap_config/
 COPY ./etc_openldap_config/schema/nsmattribute.ldif /etc/openldap/schema/
 
-RUN sed -i -e 's|#PermitRootLogin yes|PermitRootLogin yes|g' \
+RUN sed -i -e 's|#PermitRootLogin yes|PermitRootLogin no|g' \
            -e 's|#Port 22|Port 2201|g' \
            -e 's|#UseDNS yes|UseDNS no|g' /etc/ssh/sshd_config && \
     echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config && \
-    echo "root:admin@@123" | chpasswd && \
+    echo "root:redhat@@123" | chpasswd && \
     mv /ldapdata /ldapdata.NEEDINIT
 
 # Copy startup script
 COPY ./ldap_run.sh /usr/local/bin/
 COPY ./supervisord.conf /etc/supervisord.conf
+COPY ./initscripts/slapd /etc/init.d/
+RUN chmod +x /etc/init.d/slapd
 RUN chmod +x /usr/local/bin/ldap_run.sh
 
 # Expose LDAP and LDAPS ports
