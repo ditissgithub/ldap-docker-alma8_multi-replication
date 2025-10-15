@@ -1,0 +1,132 @@
+
+#!/bin/bash
+#
+# Init script for slapd (OpenLDAP server)
+#
+# chkconfig: 345 20 80
+# description: OpenLDAP server
+# processname: slapd
+
+### BEGIN INIT INFO
+# Provides: slapd
+# Required-Start: $local_fs $network
+# Required-Stop: $local_fs $network
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start and stop OpenLDAP server
+# Description: OpenLDAP server daemon
+### END INIT INFO
+
+SLAPD_BIN="/usr/sbin/slapd"
+SLAPD_PIDFILE="/var/run/slapd.pid"
+SLAPD_OPTIONS="-h 'ldap:/// ldaps:/// ldapi:///' -d 256"
+LOG_FILE="/var/log/slapd.log"
+PATH="/usr/sbin:/usr/bin:/bin:/sbin"
+start() {
+    SLAPD_P1=$(pgrep -x slapd)
+    SLAPD_P2=$(pgrep -x slapd | sed -n '2p')
+    echo "Starting slapd..."
+    if [ -f "$SLAPD_PIDFILE" ] && ps -p "$(cat "$SLAPD_PIDFILE")" > /dev/null 2>&1; then
+        if [ ! -z "$SLAPD_P2" ]; then
+        echo "slapd is already running. (PID: "$SLAPD_P2" )."
+        return 0
+        fi
+    elif [ ! -z "$SLAPD_P2" ]; then
+        echo "slapd is already running (PID: "$SLAPD_P2" )."
+    fi
+
+    # Start slapd in the background and capture its PID
+    eval "$SLAPD_BIN $SLAPD_OPTIONS" >> "$LOG_FILE" 2>&1 &
+    echo $! > "$SLAPD_PIDFILE"
+
+    # Validate if slapd started successfully
+    sleep 1
+    if [ -f "$SLAPD_PIDFILE" ] && ps -p "$(cat "$SLAPD_PIDFILE")" > /dev/null 2>&1; then
+        if [ ! -z "$SLAPD_P2" ]; then
+        echo "slapd started successfully. (PID: $(pgrep -x slapd | sed -n '3p') )."
+        return 0
+        fi
+    elif [ ! -z "$SLAPD_P1" ]; then
+        echo "slapd started successfully (PID: $(pgrep -x slapd) )."
+    else
+        echo "Failed to start slapd. Check $LOG_FILE for details."
+        rm -f "$SLAPD_PIDFILE"  # Clean up invalid PID file
+        exit 1
+    fi
+}
+
+stop() {
+    SLAPD_P1=$(pgrep -x slapd)
+    SLAPD_P2=$(pgrep -x slapd | sed -n '2p')
+    echo "Stopping slapd..."
+    if [ -f "$SLAPD_PIDFILE" ] && ps -p "$(cat "$SLAPD_PIDFILE")" > /dev/null 2>&1; then
+        if [ ! -z "$SLAPD_P2" ]; then
+          kill -9 "$SLAPD_P2"
+          kill -TERM "$(cat "$SLAPD_PIDFILE")"
+          rm -f "$SLAPD_PIDFILE"
+          echo "slapd stopped successfully."
+          pkill slapd
+        fi
+    elif [ ! -z "$SLAPD_P1" ]; then
+        echo "slapd stoped successfully."
+        pkill slapd
+    else
+        echo "slapd is not running."
+    fi
+}
+
+
+restart() {
+    SLAPD_P1=$(pgrep -x slapd)
+    SLAPD_P2=$(pgrep -x slapd | sed -n '2p')
+    echo "Restarting slapd..."
+    echo "Stopping slapd..."
+    if [ -f "$SLAPD_PIDFILE" ] && ps -p "$(cat "$SLAPD_PIDFILE")" > /dev/null 2>&1; then
+        if [ ! -z "$SLAPD_P2" ]; then
+          kill -9 $SLAPD_P2
+          echo "slapd stopped successfully."
+        fi
+    elif [ ! -z "$SLAPD_P1" ]; then
+        echo "slapd stoped successfully."
+    else
+        echo " slapd already not running"
+    fi
+    sleep 3
+    start
+}
+
+status() {
+    SLAPD_P1=$(pgrep -x slapd)
+    SLAPD_P2=$(pgrep -x slapd | sed -n '2p')
+    if [ -f "$SLAPD_PIDFILE" ] && ps -p "$(cat "$SLAPD_PIDFILE")" > /dev/null 2>&1; then
+        if [ ! -z "$SLAPD_P1" ]; then
+        echo "slapd is running. (PID: "$SLAPD_P1" )."
+        fi
+    elif [ ! -z "$SLAPD_P2" ]; then
+        echo "slapd is running. (PID: "$SLAPD_P2" )."
+    else
+        echo "slapd is not running."
+        return 1
+    fi
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        restart
+        ;;
+    status)
+        status
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
+esac
+
+exit 0
