@@ -14,4 +14,4 @@ services:
     stdin_open: true  # Equivalent to -i
     tty: true         # Equivalent to -t
     restart: unless-stopped
-    entrypoint: /bin/bash
+    
