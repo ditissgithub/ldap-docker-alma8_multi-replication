@@ -2,7 +2,7 @@
 
 set -x
 
-pass=Arya@@123
+pass=Admin@@123
 
 echo "Enter The username you want to delete: " ; read uname
 echo $uname
